@@ -1,0 +1,265 @@
+Identity Framework
+
+What :- It is a feature for login functionality. 
+
+what it provides -it is a framework for managing user accounts, their authentication, and authorization.
+
+Classes provided within identity framework:-
+1. user management - user ki login,logout,pswd,email ko confirm krna ye sb.
+
+2.Authentication- for authetification:-
+  phla - uses cookie based   		authentication --> browser application ke liye.
+
+  dusra - uses token based authentication --> Api application ke liye aur single page application ke liye bhi. 
+
+3. Authorization : User ke roles aur unke kiye gye claims ke basis pr resources ka access dena.
+
+4.External login popular provider ke through
+  login with goolgle,
+  login with facebook
+  user can login using existing accounts in google or facebook.
+
+5.Identity Framework - use Entity Framework --> to store (usernames, passwords , profile data) in database.
+
+6.Security bhi milti h 
+  identity framework m :-
+  password hashing hoti h.
+  2fa bhi hota h 
+  account lockout ho jata h 
+
+======================================
+How indentity frameworks works?
+
+1.Jb user login ya register krta h 
+2. tb Identity FM -- validate krta h user ki userid,aur pswd ko .
+3.phir user ko create ya user ke data ko retrive krta h 
+4.also issus authentication token(via cookies)
+5. aur is trh s user ki identity ko pehnchan dilvata h within the application.
+6. Then Identity FM uses this identity
+   Authorization policies to establish control access to protected resources.
+
+===============================
+Identity Framework authentication for api application ya phir SPA application ke liye:-
+
+JWT authentication kese hota h :-
+1. Jo identity / pehchan deta h vo server provider hi deta h. 
+meaning - identity provider is the service provider itself. 
+
+ye service provider -- generates JWT Token
+---> also assign it to the client. 
+
+jiska use client bad m krta h koi protected resource ko asses krne ke liye. 
+
+jb user ek authenticated user khlane lgta h then , jo service provider hota h vo ek token create krta h jo ki user ke claims(id + permissions) aur sign it with its private key.
+
+====================
+How JWT works :-
+1 . Authentication - user login in into an application.
+Sp redirect the them to Idb for authentication..
+2.Token Issurance - idb s safalta purvak authenticate hone ke bad user ek authenticated person khla gya. 
+
+To jese hi authentication complete hota h . Idb provider jo h vo ek JWT generate krta h , aur us token m user ki information hoti h,
+ 
+ye token wapas client ke pass jata h.
+
+3.client us jwt token ko Authorization header m bhejta h + private key.
+
+4.phir verification hota h. 
+idb ke pass public key hoti h . 
+yha cheak krta h idb ki token tamper to nhi hua confirm krta h.
+
+5. Authorization hota h 
+Token valid hota h to .
+resore server trusts the claims jo bhi us jwt token m (permission m likh hua hoga) aur grant krta h access to requested resorces.
+
+
+=====================
+Bearer token is a security type token used for authorization in HTTP authentication.
+this bearer token is given to user or application on sucessfull login.
+
+To access a protected resources:-
+
+client sends this bearer<token> in the Authorization header as "Bearer<token>".
+phir server is token ko validate krke . permission grant krta h .
+
+
+======================
+Who is the resource server in jwt?
+Resource Server vo server hota h jo ek protected resouces host krta h.
+
+example :- easa server jo apis,data ya files host krta ho.
+
+======================
+Hota kya h Resorce Server ke case m :-
+
+Jb client ko access cheye hota h kesi bhi protected resource ka to , vo client ek request bhejta h Resource Server ko.
+
+client jo h vo Authorization header pr jwt ke sath bearer token bhi bhejte h.
+
+phir resouces server cheak krta h Header ko . read token from header. 
+
+cheaks includes:-
+1. Signature verification- 
+   Token's signature ko verify with public key. -- dekhne ke liye ki token temper to nhi hua h . 
+. expiry data chk.
+. Issuer verification - jisne issue kiya h vo authorized server h ki nhi . 
+
+2.Authorization. 
+  jb Resource server sare cheaks krke satisfy ho jata h. then 
+
+bari ati h cheaking the claims(permissions jo vo token mang rhi h)
+
+3.Access ko open kr deta h us token ke liye. aur
+
+resource server open their protected resources.
+
+Resource server ek Tarah s gatekeeper ka kam krta h jo resouces ko protect krke rakhta h.
+resource server puri trah s  rely krta h JWT ke upr to authenticate and authorize client requests.
+
+
+
+===============================
+Authentication header(AH)
+
+Analogy - 
+ Agr Ganeshji ko kuch box bhejna h kesi friend ko . 
+soo, to ganshji chahenge ki usee
+ 1. jisse pta chale ki real ya fake box  nhi.
+2. koi open ya kuch change na kr paye us box ke andr.
+to ganesji us box ko ek AH ke andr dalkr bhejnge. 
+AH - ek plastic bag h 
+
+Simple flow-
+phla : Apne package ko bnaya.
+      mere box(payload - my data/gift ko dala inside that box)
+     then put shipping lebel on it
+(like Header - with address)
+
+dusra:
+  kuch security seal bhi lgani hoti.
+strong plastic box ke andr sari chij daldi.
+yhi plastic box(AH h )
+
+special seal s pack kiya mujhe aur mere dost ko bs pta h kese kholna h us plastic box ko . 
+
+ab vo plastic box m do chij h :-
+1. khud vo box.
+2. ek shipping label bhi h.
+
+Aur us plastic box ke upr mene 
+ek note likha ki (A Gift) krkr (next header) khlaya ye. 
+
+ek package number bhi hoga jaise sequence number -  #57.
+
+thisre: 
+mene mail kr diya vo sealed bag ko . 
+
+Choutha :
+1. Frnd s receive kiya .
+2. frnd s chk kiya number (#57) chk ki pichle s ek bada number h (#56)
+
+3. seal ko chk kiya. 
+kyuki seal kese bnti h ye bat mujhe aur frnd ko bs pta h .
+
+kuch bhi ek bhi chij gadbad dkehi mtlb h ki vo package temper ho gya h .
+
+If the seal is broken, they throw the package away without opening it.
+
+The Key Difference:
+AH (The Sealed Bag): Protects everything (the label and the box). Proves who sent it and that it's unchanged. It does not hide what's inside.
+
+ESP (Encryption): Would be like putting the box in a opaque locked safe. It hides the contents, but doesn't necessarily prove who sent the safe.
+
+some authentication methods use encoding (like Base64), this is not encryption.
+
+ it simply expose the data, making it easily decodable by anyone who intercepts it.
+ 
+How to Secure Authentication Headers
+Use TLS (Transport Layer Security)
+
+=======================================
+Cookie based authentication:-
+
+how it works:-
+1. user login 
+   user provides username and password in a login form , sending a request to the server.
+user -- username nd pswd deta h login form m. aur ye as a request jati h server ke pass.
+
+2. server verification
+  server validate krta h credentials ko
+  kese?
+  Vo stored user credentials s match krega ...request vale credentials s.
+Agr exist krta hoga to good.
+
+3.session create hota h ab . 
+  agr credential shi nikalte h to server ek unique session create krta h us user ke liye.
+
+4.Session ID cookie:- 
+ Server hi ek session id generate krta h aur use send krta h user ke browser ko as a http cookies store krta h browser use. 
+
+5. Browser ki storage ki bar kre to :
+  browser is cookie ko locally store krta h .
+
+6.Sath sath parrall m ati hue request ko jo same website pr aa rhi . 
+broser un request ko khudba khud cookie vapas bhej deta h server ko . 
+
+7. session Retrival :
+  Now, jo server hota h vo read krega cookies ko aur us cookie n kuch session id store ki hogi us id ko dekhenga aur usko apne session storage s milayega.
+
+8. Authetication :
+jo server hota h vo us session id ko verify krta h.aur jo resouces ka access dena h vo de deta h . 
+
+cookie based Authentication m server side pr user ke successfully login hone ke bad . server ek unique session id create krta h aur us session id m user ki information ko store krta h 
+mtlb (jaise- user id,roles,preferences) ye sb server pr store hota h . 
+
+ye info khi bhi store ho skti h may be memory m,database m , dedicated session storage m bhi. 
+
+yhi jo session id vo server client ko bhejta h . 
+server embed krke bhejta h session id ko ek HTTP cookies ke andr. 
+aur jo browser h vo agli request m include krke bhejegi server ko. 
+
+ye ek stateful experience hota h kyuki yha server ek state ko manage kr ke rakh rha h . 
+
+ek state ko manage krta h har ek active user ke liye. 
+Har active user ki kuch session id hogi , kuch associated user data bhi hoga . ye sb maintain krta h  
+server.
+
+
+
+
+Advantage of cookie based autentification:
+
+1. many framework does already support cookie based authentication jo.
+iski implementation ko easy bna deta h . (an ease of implementation milta h )
+
+2. cookies - stores session id -- on client's browser. 
+   
+cookies based authentication m 
+mujhe statefull exp milta h . 
+jo application m user ka ongoing session kya chal rha h ye janne m madat krta h . 
+
+
+=========================
+Disadvantages:-
+1. Server needs to store session data, jo ki kuch amount of memory leta h . aur active user ki sankhaya ke sath badhta jata h.
+
+2. Cookies - cross site request forgery attack s khatra rhta h isko.
+aur security flags s use bacha bhi ja skta h.
+
+3. Cookies ek domain s badhi hoti h . 
+jo ki ek challenge create krta h cookie based authentication m.
+mtlb different domains m ya subdomains m 
+
+======================
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiZ291dGFtIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQWRtaW4iLCJleHAiOjE3NTgxMTAxNzMsImlzcyI6InlvdXJkb21haW4uY29tIiwiYXVkIjoieW91cmRvbWFpbi5jb20ifQ.lub9oZapcMYTk9T2TqszgD70DfnXG0CC26-IdXbSedU"
+}
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiZ291dGFtIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQWRtaW4iLCJleHAiOjE3NTgxMTEyMDMsImlzcyI6InlvdXJkb21haW4uY29tIiwiYXVkIjoieW91cmRvbWFpbi5jb20ifQ.v5IzsINaSLQC3j6hnppefyy-qHsbK5AldEnBQSATS7A"
+}
+
+
+
+ 
