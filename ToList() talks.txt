@@ -1,0 +1,50 @@
+// .ToList() method -- converting into list. 
+// ek bar m ek jagah pr cheje list ke form m store krdi.
+// in memory operartion kr skunga. no boundation of using query methods only. 
+// list m (s aur bhi in memory operations open ho jate h.)
+// wihout list . enumerable/iquerable object kehlata h pending hota h.
+//jb use krunga(foreach,querytoObject convert krunga) tb db hit hoga.
+// query object hone pr it bounds to query methods only. -- sql m convert hoti h kyuki. method like- select or select all . FirstorDefault type ki.
+
+
+using System;
+
+public class HelloWorld
+{
+    public static void Main(string[] args)
+    {
+        
+        //Loop chalakr db hit krvana pada.
+       var query = context.Students.Where(s => s.Age > 20);
+      foreach (var s in query)   // Yaha DB hit hoga
+     {
+    Console.WriteLine(s.Name);
+     }
+     
+     //methods bhi forcefully hit kr deti h db ko 
+     //jaise Count() method.
+     var count = context.Students.Where(s => s.Age > 20).Count();
+// Yaha DB me COUNT(*) wali query turant fire ho gayi
+
+
+// LINQ-to-Objects operations
+// Jab data enumerate hota hai (like query.ToArray(), foreach, for, ToDictionary() etc.) tabhi query fire hoti hai.
+
+var query = context.Students.Where(s => s.Age > 20);  
+// Abhi tak koi SQL nahi fire hua
+
+var list = query.ToList();  
+// Ab SQL fire hoga: SELECT * FROM Students WHERE Age > 20
+
+// Agar .ToList() nahi lagate aur foreach loop chalate:
+foreach (var student in query)
+{
+    Console.WriteLine(student.Name);
+}
+// Yahi pe SQL fire hota hai, aur row by row data aata hai
+
+
+// .ToList() ka kaam hai: query ko turant fire karna aur data ek List me materialize kar dena
+
+    }
+}
